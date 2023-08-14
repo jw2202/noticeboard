@@ -1,5 +1,7 @@
 const express = require("express");
 const mysql = require("mysql");
+const ejs = require('ejs');
+const bodyParser = require("body-parser");
 const app = express();
 
 const connection = mysql.createConnection({
@@ -12,6 +14,8 @@ const connection = mysql.createConnection({
 connection.connect();
 
 app.set("view engine", "ejs");
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({extended:false}));
 
 app.get('/register', (req, res) => {
     res.render('register');
@@ -37,9 +41,13 @@ app.post('/login', function(req, res){
     connection.query(`SELECT * FROM infor WHERE username='${username}' AND password='${password}'`, function(error, data){
         if(error)
             console.log(error);
-        if(!Object.keys(data).length) res.render('fail-login');
-        else res.render('success-login',{username});
+        if(!Object.keys(data).length) res.send("Login Failed!");
+        else res.send(`success! your name is ${username}`);
     });
+});
+
+app.get('/post', function(req, res){
+
 });
 
 app.listen(3000, ()=>{
